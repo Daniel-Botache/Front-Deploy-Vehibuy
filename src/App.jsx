@@ -14,13 +14,13 @@ import Favorites from "./components/Favorites/Favorites";
 import Dashboard from "./components/Dashboard/Dashboard";
 import CreateProductUser from "./components/Form/CreateProductUser/CreateProductUser.jsx";
 import CreateProduct from "./components/Dashboard/CreateProduct/CreateProduct.jsx";
-import ProductsUpdate from "./components/Dashboard/ProductsUpdate/ProductsUpdate.jsx"
-import ProductsUpdateUser from "./components/Form/CreateProductUser/ProductsUpdateUser.jsx"
+import ProductsUpdate from "./components/Dashboard/ProductsUpdate/ProductsUpdate.jsx";
+import ProductsUpdateUser from "./components/Form/CreateProductUser/ProductsUpdateUser.jsx";
 import Modification from "./components/Modification/Modification";
 import Termsandconditions from "./components/TermsAndConditions/TermsAndConditions";
 import ProfileDashboard from "./components/ProfileDashboard/ProfileDashboard.jsx";
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:7183/";
+axios.defaults.baseURL = "https://back-vehibuy.onrender.com";
 
 function App() {
   return (
