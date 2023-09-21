@@ -64,6 +64,7 @@
 
 .itemCountCircle {
   display: flex;
+  margin:auto;
   position: absolute;
   align-items: center;
   justify-content: center;
