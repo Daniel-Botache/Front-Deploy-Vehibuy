@@ -5,14 +5,28 @@ import styles from "./NavBar.module.css";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { addMenuOption } from "../../Redux/actions";
-import { connect, useDispatch } from "react-redux";
+import { addMenuOption, addDashboardOption } from "../../Redux/actions";
+import { useDispatch, useSelector } from "react-redux";
 import { logOutUserSuccess } from "../NotiStack";
+import { changeDarkMode } from "../../Redux/actions.js";
 
 export default function NavBar() {
+  //______________DarkMode__________________________________
+  const handleModeChange = () => {
+    dispatch(changeDarkMode());
+    document.body.classList.toggle("darkMode");
+    console.log(darkMode);
+  };
+  const darkMode = useSelector((state) => state.darkMode);
+  //________________________________________________________
   const dispatch = useDispatch();
   const location = useLocation();
+
   const [user, setUser] = useState([]);
+
+  const cartList = useSelector((state) => state.cartList);
+  const itemCount = cartList.length;
+
   const loggedUserJson = localStorage.getItem("authToken");
   const loggedUser = loggedUserJson ? JSON.parse(loggedUserJson) : null;
 
@@ -57,6 +71,17 @@ export default function NavBar() {
       </div>
       {location.pathname === "/" && (
         <div className={styles.containerL}>
+          <div>
+            {/* Código para la barra de navegación */}
+            <label className={`${styles.switch} ${styles.switchRight}`}>
+              <input
+                type="checkbox"
+                checked={darkMode}
+                onChange={handleModeChange}
+              />
+              <span className={`${styles.slider} ${styles.round}`}></span>
+            </label>
+          </div>
           {!loggedUser ? (
             <>
               <Link to={"/login"}>
@@ -71,19 +96,24 @@ export default function NavBar() {
               <div className={styles.dropdownContainer}>
                 <div className={styles.dropdown}>
                   <div className={styles.icon_name_user}>
-                    <img src={user.image} alt="" className={styles.iconImage} />{" "}
+                    <img
+                      src={user?.image}
+                      alt=""
+                      className={styles.iconImage}
+                    />{" "}
                     <button className={styles.buttonDropdown}>
-                      {user.name} &#9660;{" "}
+                      {user?.name} &#9660;{" "}
                       {/* Agregamos una flecha hacia abajo para indicar que es desplegable */}
                     </button>
                   </div>
                   <div className={styles.dropdownContent}>
                     {/* Aquí agregamos las opciones del menú */}
+                    <Link to="/publish-your-car">Publish car</Link>
                     <Link
                       onClick={() => dispatch(addMenuOption("Purchases"))}
                       to="/profile"
                     >
-                      Purchases
+                      My Purchases
                     </Link>
                     <Link
                       to="/profile"
@@ -95,10 +125,21 @@ export default function NavBar() {
                       to="/profile"
                       onClick={() => dispatch(addMenuOption("Reviews"))}
                     >
-                      Reviews
+                      My Reviews
+                    </Link>
+                    <Link
+                      to="/profile"
+                      onClick={() => dispatch(addMenuOption("Posts"))}
+                    >
+                      My Posts
                     </Link>
                     {loggedUser.response?.type === "admin" && (
-                      <Link to={"/admin/dashboard"}>Dashboard</Link>
+                      <Link 
+                      to={"/admin/dashboard"}
+                      onClick={() => dispatch(addDashboardOption("USERS"))}
+                      >
+                        Dashboard
+                        </Link>
                     )}
                     <Link to={"/"} onClick={handleLogout}>
                       Log out
@@ -117,7 +158,9 @@ export default function NavBar() {
               <Link to={"/home"}>
                 <button className={styles.button}>Home</button>
               </Link>
-              <button className={styles.button}>Contacts</button>
+              <Link to={"/about"}>
+                <button className={styles.button}>Contacts</button>
+              </Link>
               <Link to={"/favorites"}>
                 <button className={styles.button}>Favorites</button>
               </Link>
@@ -127,25 +170,22 @@ export default function NavBar() {
             <div className={styles.containerL}>
               {loggedUser && (
                 <>
-                  <span className={styles.spanWelcome}>Welcome</span>
                   <div className={styles.dropdownContainer}>
                     <div className={styles.dropdown}>
                       <div className={styles.icon_name_user}>
-                        {loggedUser.response?.type === "admin" && (
-                          <span className={styles.spanAdmin}>Admin</span>
-                        )}
                         <img
-                          src={user.image}
+                          src={user?.image}
                           alt=""
                           className={styles.iconImage}
                         />{" "}
                         <button className={styles.buttonDropdown}>
-                          {user.name} &#9660;{" "}
+                          {user?.name} &#9660;{" "}
                           {/* Agregamos una flecha hacia abajo para indicar que es desplegable */}
                         </button>
                       </div>
                       <div className={styles.dropdownContent}>
                         {/* Aquí agregamos las opciones del menú */}
+                        <Link to="/publish-your-car">Publish car</Link>
                         <Link
                           onClick={() => dispatch(addMenuOption("Purchases"))}
                           to="/profile"
@@ -164,8 +204,19 @@ export default function NavBar() {
                         >
                           Reviews
                         </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Posts"))}
+                        >
+                          My Posts
+                        </Link>
                         {loggedUser.response?.type === "admin" && (
-                          <Link to={"/admin/dashboard"}>Dashboard</Link>
+                          <Link 
+                          to={"/admin/dashboard"}
+                          onClick={() => dispatch(addDashboardOption("USERS"))}
+                          >
+                            Dashboard
+                            </Link>
                         )}
                         <Link to={"/"} onClick={handleLogout}>
                           Log out
@@ -186,7 +237,12 @@ export default function NavBar() {
                 </>
               )}
               <Link to="/cart">
-                <img className={styles.icons} src={CART} alt="Cart..." />
+                <div className={styles.cartIconContainer}>
+                  <img className={styles.icons} src={CART} alt="Cart..." />
+                  {itemCount > 0 && (
+                    <div className={styles.itemCountCircle}>{itemCount}</div>
+                  )}
+                </div>
               </Link>
             </div>
           </div>
@@ -199,7 +255,9 @@ export default function NavBar() {
               <Link to={"/home"}>
                 <button className={styles.button}>Home</button>
               </Link>
-              <button className={styles.button}>Contacts</button>
+              <Link to={"/about"}>
+                <button className={styles.button}>Contacts</button>
+              </Link>
               <Link to={"/favorites"}>
                 <button className={styles.button}>Favorites</button>
               </Link>
@@ -209,13 +267,9 @@ export default function NavBar() {
             <div className={styles.containerL}>
               {loggedUser && (
                 <>
-                  <span>{loggedUser.email}</span>
                   <div className={styles.dropdownContainer}>
                     <div className={styles.dropdown}>
                       <div className={styles.icon_name_user}>
-                        {loggedUser.response?.type === "admin" && (
-                          <span className={styles.spanAdmin}>Admin</span>
-                        )}
                         <img
                           src={user.image}
                           alt=""
@@ -228,6 +282,7 @@ export default function NavBar() {
                       </div>
                       <div className={styles.dropdownContent}>
                         {/* Aquí agregamos las opciones del menú */}
+                        <Link to="/publish-your-car">Publish car</Link>
                         <Link
                           onClick={() => dispatch(addMenuOption("Purchases"))}
                           to="/profile"
@@ -246,8 +301,19 @@ export default function NavBar() {
                         >
                           Reviews
                         </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Posts"))}
+                        >
+                          My Posts
+                        </Link>
                         {loggedUser.response?.type === "admin" && (
-                          <Link to={"/admin/dashboard"}>Dashboard</Link>
+                          <Link 
+                          to={"/admin/dashboard"}
+                          onClick={() => dispatch(addDashboardOption("USERS"))}
+                          >
+                            Dashboard
+                            </Link>
                         )}
                         <Link to={"/"} onClick={handleLogout}>
                           Log out
@@ -268,7 +334,12 @@ export default function NavBar() {
                 </>
               )}
               <Link to="/cart">
-                <img className={styles.icons} src={CART} alt="Cart..." />
+                <div className={styles.cartIconContainer}>
+                  <img className={styles.icons} src={CART} alt="Cart..." />
+                  {itemCount > 0 && (
+                    <div className={styles.itemCountCircle}>{itemCount}</div>
+                  )}
+                </div>
               </Link>
             </div>
           </div>
@@ -281,20 +352,21 @@ export default function NavBar() {
               <Link to={"/home"}>
                 <button className={styles.button}>Home</button>
               </Link>
-              <button className={styles.button}>Contacts</button>
+              <Link to={"/about"}>
+                <button className={styles.button}>Contacts</button>
+              </Link>
+              <Link to={"/favorites"}>
+                <button className={styles.button}>Favorites</button>
+              </Link>
             </div>
           </div>
           <div>
             <div className={styles.containerL}>
               {loggedUser && (
                 <>
-                  <span>{loggedUser.email}</span>
                   <div className={styles.dropdownContainer}>
                     <div className={styles.dropdown}>
                       <div className={styles.icon_name_user}>
-                        {loggedUser.response?.type === "admin" && (
-                          <span className={styles.spanAdmin}>Admin</span>
-                        )}
                         <img
                           src={user.image}
                           alt=""
@@ -307,6 +379,7 @@ export default function NavBar() {
                       </div>
                       <div className={styles.dropdownContent}>
                         {/* Aquí agregamos las opciones del menú */}
+                        <Link to="/publish-your-car">Publish car</Link>
                         <Link
                           onClick={() => dispatch(addMenuOption("Purchases"))}
                           to="/profile"
@@ -325,8 +398,19 @@ export default function NavBar() {
                         >
                           Reviews
                         </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Posts"))}
+                        >
+                          My Posts
+                        </Link>
                         {loggedUser.response?.type === "admin" && (
-                          <Link to={"/admin/dashboard"}>Dashboard</Link>
+                          <Link 
+                          to={"/admin/dashboard"}
+                          onClick={() => dispatch(addDashboardOption("USERS"))}
+                          >
+                            Dashboard
+                            </Link>
                         )}
                         <Link to={"/"} onClick={handleLogout}>
                           Log out
@@ -347,7 +431,109 @@ export default function NavBar() {
                 </>
               )}
               <Link to="/cart">
-                <img className={styles.icons} src={CART} alt="Cart..." />
+                <div className={styles.cartIconContainer}>
+                  <img className={styles.icons} src={CART} alt="Cart..." />
+                  {itemCount > 0 && (
+                    <div className={styles.itemCountCircle}>{itemCount}</div>
+                  )}
+                </div>
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
+      {location.pathname === "/favorites" && (
+        <>
+          <div className={styles.containerLP}>
+            <div>
+              <Link to={"/home"}>
+                <button className={styles.button}>Home</button>
+              </Link>
+              <Link to={"/about"}>
+                <button className={styles.button}>Contacts</button>
+              </Link>
+              <Link to={"/favorites"}>
+                <button className={styles.button}>Favorites</button>
+              </Link>
+            </div>
+          </div>
+          <div>
+            <div className={styles.containerL}>
+              {loggedUser && (
+                <>
+                  <div className={styles.dropdownContainer}>
+                    <div className={styles.dropdown}>
+                      <div className={styles.icon_name_user}>
+                        <img
+                          src={user.image}
+                          alt=""
+                          className={styles.iconImage}
+                        />{" "}
+                        <button className={styles.buttonDropdown}>
+                          {user.name} &#9660;{" "}
+                          {/* Agregamos una flecha hacia abajo para indicar que es desplegable */}
+                        </button>
+                      </div>
+                      <div className={styles.dropdownContent}>
+                        {/* Aquí agregamos las opciones del menú */}
+                        <Link to="/publish-your-car">Publish car</Link>
+                        <Link
+                          onClick={() => dispatch(addMenuOption("Purchases"))}
+                          to="/profile"
+                        >
+                          Purchases
+                        </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Profile"))}
+                        >
+                          My Profile
+                        </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Reviews"))}
+                        >
+                          Reviews
+                        </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Posts"))}
+                        >
+                          My Posts
+                        </Link>
+                        {loggedUser.response?.type === "admin" && (
+                          <Link 
+                          to={"/admin/dashboard"}
+                          onClick={() => dispatch(addDashboardOption("USERS"))}
+                          >
+                            Dashboard
+                            </Link>
+                        )}
+                        <Link to={"/"} onClick={handleLogout}>
+                          Log out
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              {!loggedUser && (
+                <>
+                  <Link to={"/login"}>
+                    <button className={styles.button}>Log in</button>
+                  </Link>
+                  <Link to={"/register"}>
+                    <button className={styles.button}>Register</button>
+                  </Link>
+                </>
+              )}
+              <Link to="/cart">
+                <div className={styles.cartIconContainer}>
+                  <img className={styles.icons} src={CART} alt="Cart..." />
+                  {itemCount > 0 && (
+                    <div className={styles.itemCountCircle}>{itemCount}</div>
+                  )}
+                </div>
               </Link>
             </div>
           </div>
@@ -360,32 +546,34 @@ export default function NavBar() {
               <Link to={"/home"}>
                 <button className={styles.button}>Home</button>
               </Link>
-              <button className={styles.button}>Contacts</button>
+              <Link to={"/about"}>
+                <button className={styles.button}>Contacts</button>
+              </Link>
+              <Link to={"/favorites"}>
+                <button className={styles.button}>Favorites</button>
+              </Link>
             </div>
           </div>
           <div>
             <div className={styles.containerL}>
               {loggedUser && (
                 <>
-                  <span>{loggedUser.email}</span>
                   <div className={styles.dropdownContainer}>
                     <div className={styles.dropdown}>
                       <div className={styles.icon_name_user}>
-                        {loggedUser.response?.type === "admin" && (
-                          <span className={styles.spanAdmin}>Admin</span>
-                        )}
                         <img
-                          src={user.image}
+                          src={user?.image}
                           alt=""
                           className={styles.iconImage}
                         />{" "}
                         <button className={styles.buttonDropdown}>
-                          {user.name} &#9660;{" "}
+                          {user?.name} &#9660;{" "}
                           {/* Agregamos una flecha hacia abajo para indicar que es desplegable */}
                         </button>
                       </div>
                       <div className={styles.dropdownContent}>
                         {/* Aquí agregamos las opciones del menú */}
+                        <Link to="/publish-your-car">Publish car</Link>
                         <Link
                           onClick={() => dispatch(addMenuOption("Purchases"))}
                           to="/profile"
@@ -404,8 +592,19 @@ export default function NavBar() {
                         >
                           Reviews
                         </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Posts"))}
+                        >
+                          My Posts
+                        </Link>
                         {loggedUser.response?.type === "admin" && (
-                          <Link to={"/admin/dashboard"}>Dashboard</Link>
+                          <Link 
+                          to={"/admin/dashboard"}
+                          onClick={() => dispatch(addDashboardOption("USERS"))}
+                          >
+                            Dashboard
+                            </Link>
                         )}
                         <Link to={"/"} onClick={handleLogout}>
                           Log out
@@ -426,7 +625,109 @@ export default function NavBar() {
                 </>
               )}
               <Link to="/cart">
-                <img className={styles.icons} src={CART} alt="Cart..." />
+                <div className={styles.cartIconContainer}>
+                  <img className={styles.icons} src={CART} alt="Cart..." />
+                  {itemCount > 0 && (
+                    <div className={styles.itemCountCircle}>{itemCount}</div>
+                  )}
+                </div>
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
+      {location.pathname === "/about" && (
+        <>
+          <div className={styles.containerLP}>
+            <div>
+              <Link to={"/home"}>
+                <button className={styles.button}>Home</button>
+              </Link>
+              <Link to={"/about"}>
+                <button className={styles.button}>Contacts</button>
+              </Link>
+              <Link to={"/favorites"}>
+                <button className={styles.button}>Favorites</button>
+              </Link>
+            </div>
+          </div>
+          <div>
+            <div className={styles.containerL}>
+              {loggedUser && (
+                <>
+                  <div className={styles.dropdownContainer}>
+                    <div className={styles.dropdown}>
+                      <div className={styles.icon_name_user}>
+                        <img
+                          src={user.image}
+                          alt=""
+                          className={styles.iconImage}
+                        />{" "}
+                        <button className={styles.buttonDropdown}>
+                          {user.name} &#9660;{" "}
+                          {/* Agregamos una flecha hacia abajo para indicar que es desplegable */}
+                        </button>
+                      </div>
+                      <div className={styles.dropdownContent}>
+                        {/* Aquí agregamos las opciones del menú */}
+                        <Link to="/publish-your-car">Publish car</Link>
+                        <Link
+                          onClick={() => dispatch(addMenuOption("Purchases"))}
+                          to="/profile"
+                        >
+                          Purchases
+                        </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Profile"))}
+                        >
+                          My Profile
+                        </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Reviews"))}
+                        >
+                          Reviews
+                        </Link>
+                        <Link
+                          to="/profile"
+                          onClick={() => dispatch(addMenuOption("Posts"))}
+                        >
+                          My Posts
+                        </Link>
+                        {loggedUser.response?.type === "admin" && (
+                          <Link 
+                          to={"/admin/dashboard"}
+                          onClick={() => dispatch(addDashboardOption("USERS"))}
+                          >
+                            Dashboard
+                            </Link>
+                        )}
+                        <Link to={"/"} onClick={handleLogout}>
+                          Log out
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              {!loggedUser && (
+                <>
+                  <Link to={"/login"}>
+                    <button className={styles.button}>Log in</button>
+                  </Link>
+                  <Link to={"/register"}>
+                    <button className={styles.button}>Register</button>
+                  </Link>
+                </>
+              )}
+              <Link to="/cart">
+                <div className={styles.cartIconContainer}>
+                  <img className={styles.icons} src={CART} alt="Cart..." />
+                  {itemCount > 0 && (
+                    <div className={styles.itemCountCircle}>{itemCount}</div>
+                  )}
+                </div>
               </Link>
             </div>
           </div>
