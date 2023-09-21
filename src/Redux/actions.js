@@ -228,7 +228,6 @@ export const deleteUserWithID = (id) => {
   };
 };
 
-
 export const editPutUser = (objeto, id) => {
   const endpoint = `http://localhost:7183/user/dashboard/users/${id}`;
   return async (dispatch) => {
@@ -316,12 +315,11 @@ export const orderFilters = (order) => {
 export const editPutCar = (objeto, id) => {
   const endpoint = `http://localhost:7183/car/edit/${id}`;
   return async (dispatch) => {
-
     console.log(id, "Soy el id");
 
     try {
       const { status, data } = await axios.put(endpoint, objeto);
-      
+
       return dispatch({
         type: "EDITED_CAR",
         payload: data,
@@ -334,8 +332,8 @@ export const editPutCar = (objeto, id) => {
         }
       }
     }
-  }
-}
+  };
+};
 //------------------------------------------------------------------------
 
 export const postReview = (data) => {
@@ -351,7 +349,6 @@ export const postReview = (data) => {
 };
 
 export const deleteCarWithID = (id) => {
-  const endpoint = `http://localhost:7183/car/dashboard/car/${id}`;
   return async (dispatch) => {
     try {
       const { status, data } = await axios.delete(endpoint);
