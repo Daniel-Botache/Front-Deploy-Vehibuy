@@ -108,7 +108,7 @@
 
 .name_and_brand {
     display: flex;
-    grid-column: 3;
+    grid-column: 2;
     flex-direction: column;
     margin-left: 2rem;
     align-items: flex-start;
