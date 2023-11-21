@@ -20,7 +20,7 @@ import Modification from "./components/Modification/Modification";
 import Termsandconditions from "./components/TermsAndConditions/TermsAndConditions";
 import ProfileDashboard from "./components/ProfileDashboard/ProfileDashboard.jsx";
 import axios from "axios";
-axios.defaults.baseURL = "https://back-deploy-vehibuy-dev-annt.4.us-1.fl0.io";
+axios.defaults.baseURL = "https://back-deploy-vehibuy-dev-smax.4.us-1.fl0.io";
 
 function App() {
   return (
