@@ -42,7 +42,7 @@ export default function Footer() {
           <ul>
             <Link to={"https://wa.link/bu5p4z"}>
               <li>
-                <b>Tel: </b>+54 3217917318
+                <b>Tel: </b>+57 3217917318
               </li>
             </Link>
             <a href="mailto:vehibuy@vehibuy.com">
