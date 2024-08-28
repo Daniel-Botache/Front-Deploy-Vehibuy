@@ -40,7 +40,7 @@ export default function Footer() {
         <div className={styles.containerList}>
           <p>Company</p>
           <ul>
-            <Link to={"https://wa.link/bu5p4z"}>
+            <Link to={""}>
               <li>
                 <b>Tel: </b>+57 3217917318
               </li>
@@ -50,7 +50,7 @@ export default function Footer() {
                 <b>Email: </b>vehibuy@vehibuy.com
               </li>
             </a>
-            <Link to={"https://wa.link/bu5p4z"}>
+            <Link to={""}>
               <li>
                 <b>WhatsApp: </b>+57 3217917318
               </li>
